@@ -1,0 +1,15 @@
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="style.css"/>
+  </head>
+  <body>
+    <div id="cljs-target"></div>
+    <div class="footer-javascripts">
+      <!-- Require the goog closure compiler base for development -->
+      <!-- In production this will not be necessary -->
+      <script src="./javascripts/cljs-dev/goog/base.js"></script>
+      <script src="./javascripts/dev.js"></script>
+      <script>goog.require('tic_tac_toe.core')</script>
+    </div>
+  </body>
+</html>

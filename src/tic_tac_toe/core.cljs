@@ -91,7 +91,7 @@
   (let [cells (vec (flatten (gamestate :rows)))]
     (println cells)
     (first (filter 
-      #(apply = %)
+      #(and (apply = %) (every? some? %))
       (map 
         (fn [combo] (map #(cells %) combo))
         (gamestate :winning-combos))))))
@@ -111,7 +111,7 @@
   ;; and this function will update the state to mark the board and switch the player
   (fn []
     [:div {}
-      [:h1 (check-for-winner @gamestate)]
+      [:h1 (or (check-for-winner @gamestate) "Let the games begin!")]
       [:table
         [:tbody
           (map-indexed (fn [r_idx row]

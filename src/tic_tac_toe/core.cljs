@@ -86,6 +86,15 @@
     (horizontal-wins board-dim)
     (diagonal-wins board-dim)))
 
+;; Find first winning combo for which the mark is the same for each cell of the combo
+(defn check-for-winner [gamestate]
+  (let [cells (vec (flatten (gamestate :rows)))]
+    (println cells)
+    (first (filter 
+      #(apply = %)
+      (map 
+        (fn [combo] (map #(cells %) combo))
+        (gamestate :winning-combos))))))
 
 (defn game-board [dimension]
   (let [gamestate (reagent/atom {
@@ -93,27 +102,16 @@
     :current-player 0
     :board-dim dimension
     :rows (square-grid nil dimension)
-    :winning-combos nil
+    :winning-combos (get-winning-combos dimension)
   })]
-  ;; Create our get-winner function, which will be informed by initially computing all winning combinations
-  ;; This lets us bake one function which we can call later without redoing that work
-  (def check-for-winner 
-    (let [winning-combos (get-winning-combos dimension)]
-      #(println winning-combos)))
-
-    ;; ^^^ TODO
-    ;; want to iterate through all combos,
-    ;; checking each one to see if they are all populated with the same actual value
-    ;; First combination which does should let us return the value contained
-  
   ;; Table
   ;; Should create a child component to which we can pass down the means to update state
   ;; Without explicitly passing the state around.
   ;; Could have each cell be a component, to which a function is passed
   ;; and this function will update the state to mark the board and switch the player
   (fn []
-    (check-for-winner)
     [:div {}
+      [:h1 (check-for-winner @gamestate)]
       [:table
         [:tbody
           (map-indexed (fn [r_idx row]

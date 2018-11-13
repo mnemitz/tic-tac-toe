@@ -89,12 +89,12 @@
 ;; Find first winning combo for which the mark is the same for each cell of the combo
 (defn check-for-winner [gamestate]
   (let [cells (vec (flatten (gamestate :rows)))]
-    (println cells)
-    (first (filter 
+    (println cells) ;; Log
+    (first (first (filter 
       #(and (apply = %) (every? some? %))
       (map 
         (fn [combo] (map #(cells %) combo))
-        (gamestate :winning-combos))))))
+        (gamestate :winning-combos)))))))
 
 (defn game-board [dimension]
   (let [gamestate (reagent/atom {
@@ -104,14 +104,11 @@
     :rows (square-grid nil dimension)
     :winning-combos (get-winning-combos dimension)
   })]
-  ;; Table
-  ;; Should create a child component to which we can pass down the means to update state
-  ;; Without explicitly passing the state around.
-  ;; Could have each cell be a component, to which a function is passed
-  ;; and this function will update the state to mark the board and switch the player
   (fn []
     [:div {}
-      [:h1 (or (check-for-winner @gamestate) "Let the games begin!")]
+      [:h1 (if-let [winner (check-for-winner @gamestate)]
+        (str "The winner is: " winner "!")
+        "Let the games begin!")]
       [:table
         [:tbody
           (map-indexed (fn [r_idx row]
@@ -135,13 +132,14 @@
                       )}
                   [game-cell gamestate r_idx c_idx cell]])
                 row)])
-      (get @gamestate :rows))]]])))
+      (@gamestate :rows))]]])))
 
 
 
 (defn app []
   [:div
-    [:h1 "Tic-Tac-Toe!"]
+    [:header
+          [:h1 "Tic-Tac-Toe!"]]
     [game-board 3]])
 
 (reagent/render [app] (js/document.querySelector "#cljs-target"))
